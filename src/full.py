@@ -15,7 +15,7 @@ global side_turn
 side_turn = "center"
 move = Twist()
 
-class LoadImage(object):
+class LineFollower(object):
     
     
 
@@ -171,7 +171,7 @@ class LoadImage(object):
 
 
 def main():
-    load_image_object = LoadImage(corner_var, side_turn)
+    line_follower = LineFollower(corner_var, side_turn)
     rospy.init_node('load_image_node', anonymous=True)
     try:
         rospy.spin()
