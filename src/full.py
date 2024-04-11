@@ -27,9 +27,6 @@ class LineFollower(object):
         #self.side_turn = side_turn
         
     def camera_callback(self,data):
-
-        
-
         #bridge_object = CvBridge()
 
         image = bridge_object.imgmsg_to_cv2(data)
@@ -89,8 +86,8 @@ class LineFollower(object):
         # if we detect and obstacle we stop the robot
 
 
-sign_turn = 1
-corner_var = 0
+sign_turn = 0
+corner_var = 0 
 side_turn = "center"
 object_detected = False
 
@@ -101,7 +98,7 @@ if __name__ == '__main__':
         
         rospy.init_node('load_image_node', anonymous=True)
         line_follower = LineFollower(corner_var, side_turn)
-        prueba = 0
+        #prueba = 0
         move = Twist()
         
         try:
