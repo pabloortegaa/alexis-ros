@@ -13,13 +13,7 @@ global corner_var
 global side_turn
 global object_detected 
 global sign_turn
-
-
-
-sign_turn = 1
-corner_var = 0
-side_turn = "center"
-object_detected = False
+global move
 
 
 move = Twist()
@@ -29,15 +23,14 @@ class LineFollower(object):
         self.image_sub = rospy.Subscriber("/camera/color/image_raw",Image, self.camera_callback)
         #self.image_lidar = rospy.Subscriber("/scan",LaserScan, self.lidar_callback)
         self.bridge_object = CvBridge()
-        self.corner_var = corner_var
-        self.side_turn = side_turn
+        #self.corner_var = corner_var
+        #self.side_turn = side_turn
         
     def camera_callback(self,data):
-        global corner_var
-        global side_turn
-        global move
 
-        bridge_object = CvBridge()
+        
+
+        #bridge_object = CvBridge()
 
         image = bridge_object.imgmsg_to_cv2(data)
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -77,6 +70,7 @@ class LineFollower(object):
         else:
             #GO STRAIGHT  
             move.linear.x = 0.1
+            sign_turn = 0
         
 
         example_path = 'test_image_1.jpg'    
@@ -89,52 +83,63 @@ class LineFollower(object):
         
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
-    def lidar_callback(self,data):
-
+    #def lidar_callback(self,data):
+        #print('hello')
         # get the info of the lidar
         # if we detect and obstacle we stop the robot
 
 
-
-
-
+sign_turn = 1
+corner_var = 0
+side_turn = "center"
+object_detected = False
 
 if __name__ == '__main__':
-    rospy.init_node('load_image_node', anonymous=True)
-    line_follower = LineFollower(corner_var, side_turn)
-    prueba = 0
-    move = Twist()
+   
+    while True:
     
-    try:
-        if object_detected:
-            #go to that object
-            #yolov8
-            print("object detected")
-        else:
-            #follow the line   
-            if side_turn != "center": # we are turning
-                sign_turn = 1 if side_turn == "left" else -1
-                move.linear.x = 0.2
-                move.angular.z = 1.4 * sign_turn
-                corner_var -= 1
-                if corner_var == 0:
-                    side_turn = "center"
-            else: # we are going straight
-                move.linear.x = 0.1
-                move.angular.z = 0.3 * sign_turn
-
-        pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
-        rate = rospy.Rate(2)
-        pub.publish(move)
-        print("corner_var", corner_var)
-        print("---------------")
-
-
-                
         
-    except KeyboardInterrupt:
-        print("Shutting down")
-    cv2.destroyAllWindows()
+        rospy.init_node('load_image_node', anonymous=True)
+        line_follower = LineFollower(corner_var, side_turn)
+        prueba = 0
+        move = Twist()
+        
+        try:
 
 
+            if object_detected:
+                #go to that object
+                #yolov8
+                print("object detected")
+            else:
+                #follow the line   
+                if side_turn != "center": # we are turning
+                    sign_turn = 1 if side_turn == "left" else -1
+                    move.linear.x = 0.2
+                    move.angular.z = 1.4 * sign_turn
+                    corner_var -= 1
+                    if corner_var == 0:
+                        side_turn = "center"
+                else: # we are going straight
+                    move.linear.x = 0.1
+                    move.angular.z = 0.3 * sign_turn
+
+            pub = rospy.Publisher('cmd_vel', Twist, queue_size=1)
+            rate = rospy.Rate(2)
+            pub.publish(move)
+            print("corner_var", corner_var)
+            print("---------------")
+            #rate.sleep()
+
+
+                    
+            
+        except KeyboardInterrupt:
+            print("Shutting down")
+            rospy.shutdown()
+            cv2.destroyAllWindows()
+            #break
+
+#if __name__ == '__main__':
+       # main()
     
